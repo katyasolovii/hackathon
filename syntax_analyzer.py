@@ -54,6 +54,7 @@ def check_assignment_syntax(tokens):
 
     return success, error
 
+
 def check_expression_syntax(tokens):
     """Функція перевіряє синтаксичну правильність виразу за списком токенів.
 
@@ -132,6 +133,7 @@ def _check_pair(token, next_token):
     }
 
     return next_token.type in valid_pairs[token.type]
+
 
 def _check_start_end(tokens):
     """Функція перевіряє чи правильний токен стоїть на початку та кінці
