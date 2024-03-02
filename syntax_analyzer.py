@@ -39,22 +39,20 @@ def check_assignment_syntax(tokens):
         success: булівське значення
         error: рядок помилки
     """
-    success = True
-    error = ""
+    success, error = check_expression_syntax(tokens)
 
-    # Перевірка на порожній вираз
-    if not tokens:
-        success = False
-        error = ERRORS["empty_expr"]
+    if not success:
         return success, error
-
     # Перевірка правильності присвоєння
-    if len(tokens) < 3 or tokens[1].type != "equal":
+    if tokens[-2].type != "equal": 
         success = False
         error = ERRORS["incorrect_assignment"]
 
-    return success, error
+    if len(tokens) > 3:
+        success = True
+        error = ""
 
+    return success, error
 
 def check_expression_syntax(tokens):
     """Функція перевіряє синтаксичну правильність виразу за списком токенів.
@@ -71,19 +69,16 @@ def check_expression_syntax(tokens):
     success = True
     error = ""
 
-    # Перевірка на порожній вираз
-    if not tokens:
+    if len(tokens) < 3:
         success = False
         error = ERRORS["empty_expr"]
         return success, error
 
-    # Перевірка правильності розставлення дужок
     if not _check_parens(tokens):
         success = False
         error = ERRORS["incorrect_parens"]
         return success, error
 
-    # Перевірка правильності пар токенів
     for i in range(len(tokens) - 1):
         token = tokens[i]
         next_token = tokens[i + 1]
@@ -91,8 +86,7 @@ def check_expression_syntax(tokens):
             success = False
             error = ERRORS["invalid_pair"].format(token, next_token)
             break
-
-    # Перевірка правильного початку та кінця виразу
+    
     if not _check_start_end(tokens):
         success = False
         error = ERRORS["invalid_start"]
@@ -112,7 +106,7 @@ def _check_parens(tokens):
         if token.type == "left_paren":
             stack.append(token)
         elif token.type == "right_paren":
-            if not stack:
+            if not stack or stack[-1].type != "left_paren":
                 return False
             stack.pop()
     return not stack
@@ -128,17 +122,16 @@ def _check_pair(token, next_token):
     :return: success - булівське значення
     """
     valid_pairs = {
-        "variable": {"operation", "right_paren"},
+        "variable": {"operation", "right_paren", "equal"},
         "constant": {"operation", "right_paren"},
         "operation": {"variable", "constant", "left_paren"},
         "equal": {"variable", "constant", "left_paren"},
         "left_paren": {"left_paren", "variable", "constant"},
-        "right_paren": {"operation", "right_paren"},
+        "right_paren": {"operation", "right_paren", "other"},
         "other": set()
     }
 
     return next_token.type in valid_pairs[token.type]
-
 
 def _check_start_end(tokens):
     """Функція перевіряє чи правильний токен стоїть на початку та кінці
@@ -152,7 +145,7 @@ def _check_start_end(tokens):
     if tokens[0].type not in VALID_START or tokens[-1].type not in VALID_END:
         return False
     return True
-
+    
 
 if __name__ == "__main__":
     success1, error1 = check_expression_syntax(get_tokens("(((ab1_ - 345.56)(*/.2{_cde23"))
@@ -167,7 +160,7 @@ if __name__ == "__main__":
     success10, error10 = check_assignment_syntax(get_tokens("x = (a+b)"))
 
     assert not success1 and error1 == 'Неправильно розставлені дужки'
-    assert not success2 and error2 == "Недопустима пара токенів Token(type='operation', value='*'), Token(type='operation', value='/')"
+    assert not success2 and error2 == "Недопустима пара токенів Token(type='operation', value='*'), Token(type='operation', value='/')" 
     assert not success3 and not success4
     assert not success5 and error5 == "Недопустима пара токенів Token(type='operation', value='-'), Token(type='other', value='.')"
     assert not success6 and error6 == "Порожній вираз"
