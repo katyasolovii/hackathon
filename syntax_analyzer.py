@@ -39,20 +39,22 @@ def check_assignment_syntax(tokens):
         success: булівське значення
         error: рядок помилки
     """
-    success, error = check_expression_syntax(tokens)
-
-    if not success:
+    success = True
+    error = ""
+    
+    if len(tokens) < 3:
+        success = False
+        error = ERRORS["empty_expr"]
         return success, error
-    # Перевірка правильності присвоєння
-    if tokens[-2].type != "equal": 
+
+    if tokens[0].type != "variable" or tokens[1].type != "equal":
         success = False
         error = ERRORS["incorrect_assignment"]
+        return success, error
 
-    if len(tokens) > 3:
-        success = True
-        error = ""
+    expression_tokens = tokens[2:]
+    return check_expression_syntax(expression_tokens)
 
-    return success, error
 
 def check_expression_syntax(tokens):
     """Функція перевіряє синтаксичну правильність виразу за списком токенів.
@@ -121,17 +123,8 @@ def _check_pair(token, next_token):
     :param next_token: наступний токен
     :return: success - булівське значення
     """
-    valid_pairs = {
-        "variable": {"operation", "right_paren", "equal"},
-        "constant": {"operation", "right_paren"},
-        "operation": {"variable", "constant", "left_paren"},
-        "equal": {"variable", "constant", "left_paren"},
-        "left_paren": {"left_paren", "variable", "constant"},
-        "right_paren": {"operation", "right_paren", "other"},
-        "other": set()
-    }
+    return next_token.type in VALID_PAIRS[token.type]
 
-    return next_token.type in valid_pairs[token.type]
 
 def _check_start_end(tokens):
     """Функція перевіряє чи правильний токен стоїть на початку та кінці
