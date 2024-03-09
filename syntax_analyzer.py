@@ -57,8 +57,11 @@ def check_assignment_syntax(tokens):
         error = ERRORS["invalid_start"]
         return success, error
     
-    expression_tokens = tokens[2:]
-    return check_expression_syntax(expression_tokens)
+    if len(tokens) > 3:
+        expression_tokens = tokens[2:]
+        return check_expression_syntax(expression_tokens)
+    
+    return success, error
 
 
 def check_expression_syntax(tokens):
@@ -75,7 +78,7 @@ def check_expression_syntax(tokens):
     """
     success = True
     error = ""
-
+ 
     if len(tokens) < 3:
         success = False
         error = ERRORS["empty_expr"]
@@ -159,6 +162,7 @@ if __name__ == "__main__":
     success11, error11 = check_assignment_syntax(get_tokens("x = (a = b)"))
     success12, error12 = check_assignment_syntax(get_tokens("_sdf = ="))
     success13, error13 = check_expression_syntax(get_tokens("x = x"))
+    success14, error14 = check_assignment_syntax(get_tokens("x = 1"))
     
     assert not success1 and error1 == 'Неправильно розставлені дужки'
     assert not success2 and error2 == "Недопустима пара токенів Token(type='operation', value='*'), Token(type='operation', value='/')" 
@@ -172,5 +176,6 @@ if __name__ == "__main__":
     assert not success11 and error11 == "Недопустима пара токенів Token(type='variable', value='a'), Token(type='equal', value='=')"
     assert not success12 and error12 == "Недопустимий початок або кінець"
     assert not success13 and error13 == "Недопустима пара токенів Token(type='variable', value='x'), Token(type='equal', value='=')"
-
+    assert success14 and error14 == ""
+    
     print("Success =", True)
