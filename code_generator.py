@@ -156,13 +156,6 @@ def _expression(code: list, tokens: List[Token]):
     :param tokens: список токенів
     :return: None
     """
-    if len(tokens) == 1:  
-        if tokens[0].type == "variable":
-            code.append(("LOADV", tokens[0].value)) 
-        elif tokens[0].type == "constant":
-            code.append(("LOADC", float(tokens[0].value)))  
-        return
-
     _term(code, tokens)
     while tokens and tokens[0].value in ["+", "-"]:
         operator = tokens.pop(0)
@@ -228,7 +221,7 @@ def _factor(code: list, tokens: List[Token]):
         for i in range(0, len(tokens)):
             token = tokens[i]
             if token.type == "left_paren":
-                bal += 1
+                bal += 1 
             elif token.type == "right_paren":
                 bal -= 1
             if bal == 0:
@@ -242,6 +235,12 @@ def _factor(code: list, tokens: List[Token]):
     elif tokens[0].type == "variable":
         variable = tokens.pop(0).value
         code.append(("LOADV", variable))
+    elif len(tokens) == 1:  
+        if tokens[0].type == "variable":
+            code.append(("LOADV", tokens[0].value)) 
+        elif tokens[0].type == "constant":
+            code.append(("LOADC", float(tokens[0].value)))  
+        return
 
 
 if __name__ == "__main__":
