@@ -9,9 +9,9 @@
 та обчислення значення простого виразу (сума доданків)
 """
 
-from tokenizer import get_tokens
-from syntax_analyzer import check_expression_syntax
-import storage
+from skeleton.tokenizer import get_tokens
+from skeleton.syntax_analyzer import check_expression_syntax
+import skeleton.storage as storage
 
 
 def fill_storage(tokens):
