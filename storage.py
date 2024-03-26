@@ -6,18 +6,16 @@ ERRORS = {0: "",
           2: "Змінна не існує",
           3: "Змінна невизначена"}
 
-#----------------------->Function add
-""" Функція додає змінну у память.
+
+def add(variable):
+    """
+    Функція додає змінну у память.
     Якщо така змінна вже існує, то встановлює помилку
     :param variable: змінна
     :return: None
     """
-
-
-def add(variable):
-    global _storage
     global _last_error                                                          
-    if variable in _storage.keys():
+    if variable in _storage:
         _last_error = 1
         return
     else:
@@ -26,54 +24,45 @@ def add(variable):
         return
 
 
-#----------------------->Function is_in
-""" Функція перевіряє, чи є змінна у пам'яті.
+def is_in(variable):
+    """ 
+    Функція перевіряє, чи є змінна у пам'яті.
     :param variable: змінна
     :return: булівське значенна (True, якщо є)
     """
-
-
-def is_in(variable):
-    global _storage
     global _last_error
     _last_error = 0
     return variable in _storage.keys()
 
 
-#----------------------->Function get
-""" Функція повертає значення змінної.
+def get(variable):
+    """ 
+    Функція повертає значення змінної.
     Якщо така змінна не існує або невизначена (==None),
     то встановлює відповідну помилку
     :param variable: змінна
     :return: значення змінної
     """
-
-
-def get(variable):
-    global _storage
     global _last_error
     if variable not in _storage.keys():
         _last_error = 2
         return
-    x = _storage.get(variable)
+    x = _storage[variable]
     if x is None:
         _last_error = 3
         return
     _last_error = 0
-    return _storage[variable]
+    return x
 
 
-#----------------------->Function set
-""" Функція встановлює значення змінної
+def set(variable, value):
+    """
+    Функція встановлює значення змінної
     Якщо змінна не існує, повертає помилку
     :param variable: змінна
     :param value: нове значення
     :return: None
     """
-
-
-def set(variable, value):
-    global _storage
     global _last_error
     if variable not in _storage.keys():
         _last_error = 2
@@ -83,16 +72,14 @@ def set(variable, value):
     return
 
 
-#----------------------->Function input_var
-"""Функція здійснює введення з клавіатури та встановлення значення змінної
+def input_var(variable):
+    """
+    Функція здійснює введення з клавіатури та встановлення значення змінної
     Якщо змінна не існує, повертає помилку
     :param variable: змінна
     :return: None
     """
-
-
-def input_var(variable):
-    global _last_error, _storage
+    global _last_error
     if variable not in _storage.keys():
         _last_error = 2
         return
@@ -101,44 +88,38 @@ def input_var(variable):
     return
 
 
-#----------------------->Function input_all
-""" Функція здійснює введення з клавіатури та встановлення значення
+def input_all():
+    """
+    Функція здійснює введення з клавіатури та встановлення значення
     усіх змінних з пам'яті
     :return: None
     """
-
-
-def input_all():
-    global _storage, _last_error
+    global _last_error
     _last_error = 0
     for el in _storage:
         _storage[el] = int(input(f"Введіть значення ({el}): "))
     return None
 
 
-#----------------------->Function clear
-"""Функція видаляє усі змінні з пам'яті.
+def clear():
+    """
+    Функція видаляє усі змінні з пам'яті.
     :return: None
     """
-
-
-def clear():
     global _storage, _last_error
     _last_error = 0
     _storage = {}
     return
 
 
-#----------------------->Function get_last_error
-"""Функція повертає код останньої помилки code
+def get_last_error():
+    """
+    Функція повертає код останньої помилки code
     Для виведення повідомлення треба взяти
     storage.ERRORS[code]
 
     :return: код останньої помилки
     """
-
-
-def get_last_error():
     global _last_error
     return _last_error
 
@@ -149,7 +130,6 @@ if __name__ == "__main__":
     add("a")
     assert get_last_error() == 1
     c = get("a")
-    #print(f"c = {c}")
     assert c == None and get_last_error() == 3
     c = get("b")
     assert c == None and get_last_error() == 2
@@ -160,6 +140,7 @@ if __name__ == "__main__":
     set("b", 2)
     assert get_last_error() == 2
     add("x")
+    assert get_last_error() == 0
     input_var("x")      # ввести значення x = 2
     assert get_last_error() == 0
     f = get("x")
@@ -177,5 +158,8 @@ if __name__ == "__main__":
     f = get("d")
     assert f == 4 and get_last_error() == 0
     assert is_in("a")
+    assert get_last_error() == 0
+
+    assert not is_in("_asda") and get_last_error() == 0
 
     print("Success = True")
