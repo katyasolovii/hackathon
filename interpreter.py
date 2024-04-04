@@ -229,8 +229,7 @@ def execute(code):
     global _last_error
     for command, operand in code:
         if command in COMMAND_FUNCS:
-            f = COMMAND_FUNCS[command]
-            f(operand)
+            f = COMMAND_FUNCS[command](operand)
             if _last_error != 0:
                 break
         else:
